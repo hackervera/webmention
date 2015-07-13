@@ -40,13 +40,13 @@ defmodule Webmention do
   @doc """
   Convert a floki tree to html again
   """
-  def tag_parser(list) do
-    {tag, options, children} = list
+  def tag_parser(tree) do
+    {tag, options, children} = tree
 
     formatted_options = options |> Enum.map(fn option ->
       {key, value} = option
-      "#{key}='#{value}'"
-    end) |> Enum.join(" ")
+      " #{key}='#{value}'"
+    end)
 
     formatted_kids = children |> Enum.map(fn child ->
       if is_tuple child do
@@ -56,7 +56,7 @@ defmodule Webmention do
       end
     end) |> Enum.join("") |> String.strip
     
-    "<#{tag} #{formatted_options}>#{formatted_kids}</#{tag}>"
+    "<#{tag}#{formatted_options}>#{formatted_kids}</#{tag}>"
   end
   
   

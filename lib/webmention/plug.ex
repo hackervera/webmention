@@ -20,7 +20,7 @@ defmodule Webmention.Plug do
       {:error, message} ->
         conn |> send_resp 403, "Webmention source not verified"
       {:ok, html} ->
-        content = Webmention.content(html) |> Webmention.tag_parser
+        content = html |> Webmention.content |> Webmention.tag_parser
         conn |> put_private :message_content, content
     end
   end
