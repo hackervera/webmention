@@ -27,7 +27,6 @@ defmodule Webmention.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:ibrowse, github: "cmullaparthi/ibrowse", tag: "v4.1.1"},
-      {:httpotion, "~> 2.1.0"},{:floki, "~> 0.3"}]
+    [{:httpotion, "~> 3.0.2"},{:floki, "~> 0.11.0"}]
   end
 end

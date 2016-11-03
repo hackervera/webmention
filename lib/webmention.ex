@@ -2,56 +2,55 @@ defmodule Webmention do
   @moduledoc """
   This module is for creating webmentions
   """
-  
+
   require Logger
   require IEx
 
   @doc """
   Hit source url and see if it points to target anywhere in the body
-  
-  Example:  
+
+  Example:
   Webmention.verify "https://css-tricks.com/attribute-selectors/", "/video-screencasts/"
   """
   def verify(source, target) do
     html = HTTPotion.get(source).body
-    a_hrefs = Floki.find(html, "a[href=#{target}]")
-    link_hrefs = Floki.find(html, "link[href=#{target}]")
+    a_hrefs = Floki.find(html, "a[href='#{target}']")
+    link_hrefs = Floki.find(html, "link[href='#{target}']")
     all_refs = a_hrefs ++ link_hrefs
     result =  all_refs |> List.first
+    IO.inspect result
     if result do
       {:ok, html}
     else
       {:error, "Not verified"}
     end
   end
-  
+
   def content(html) do
     # TODO A method to parse out links
-    Floki.find(html, "[class=e-content]") |> List.first
+    Floki.find(html, "[class*=e-content]") |> List.first |> Floki.raw_html
   end
-  
-  
+
   def endpoint(content_url) do
-    response = content_url |> HTTPotion.get
+    response = HTTPotion.get(content_url)
     {_,[{"href", webmention_url}|_],_} = response.body |> Floki.find("[rel=webmention]") |> List.first
     webmention_url
   end
-  
+
   @doc """
   Ping remote webmention endpoint to update with new reply
   """
   def ping(content_url, reply_url) do
     IEx.pry
-    
+
   end
-  
+
   @doc """
   This will try to find the url somewhere in our system
   """
-  def lookup_url(url) do
-    
+  def lookup_url(_url) do
   end
-  
+
   @doc """
   Convert a floki tree to html again
   """
@@ -67,12 +66,10 @@ defmodule Webmention do
       if is_tuple child do
         tag_parser child
       else
-        child |> String.replace "\n", "" 
+        child |> String.replace("\n", "")
       end
     end) |> Enum.join("") |> String.strip
-    
+
     "<#{tag}#{formatted_options}>#{formatted_kids}</#{tag}>"
   end
-  
-  
 end
