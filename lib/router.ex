@@ -1,9 +1,15 @@
 defmodule Webmention.Router do
-  defmacro __using__(root) do
+
+  alias Webmention.MentionController
+  defmacro __using__(options) do
+    opts = %{foo: :bar}
+    # %{function: :create, callback: options.webmention_callback}
+    # Force app to start so we can use it later
     HTTPotion.start
     quote do
-      scope "/#{unquote root}" do
-        post "/webmention", Webmention.MentionController, :create
+      options = unquote options
+      scope "/#{options.root}" do
+       post "/webmention", MentionController, [function: :create, callback: options.webmention_callback, module: __MODULE__]
       end
     end
   end
