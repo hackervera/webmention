@@ -22,4 +22,5 @@ end
 ```
 
 Once the webmention is sucessfully verified, the content from the source site will be returned in the content variable.  
-You can use whatever function name you want for the callback, just be sure to change it in the config map.
+You can use whatever function name you want for the callback, just be sure to change it in the config map.  
+You need to add `plug :put_webmention_header` to any pipeline where you want to have a discoverable webmention.
