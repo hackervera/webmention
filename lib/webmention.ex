@@ -30,6 +30,21 @@ defmodule Webmention do
     Floki.find(html, "[class=e-content]") |> List.first
   end
   
+  
+  def endpoint(content_url) do
+    response = content_url |> HTTPotion.get
+    {_,[{"href", webmention_url}|_],_} = response.body |> Floki.find("[rel=webmention]") |> List.first
+    webmention_url
+  end
+  
+  @doc """
+  Ping remote webmention endpoint to update with new reply
+  """
+  def ping(content_url, reply_url) do
+    IEx.pry
+    
+  end
+  
   @doc """
   This will try to find the url somewhere in our system
   """
