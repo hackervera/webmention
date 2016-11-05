@@ -43,6 +43,6 @@ def token_function(code) do
 end
 ```
 ## In a controller
-In the controller that controlls access to private data you will need to add `plug Webmention.Authorize, SomeModule.some_function`. This will ensure your site throws a 401 unless passed a valid token to the endpoint. This function should return the expected token for this request. It doesn't take any arguments.
+In the controller that controls access to private data, you will need to add `plug Webmention.Authorize, SomeModule.some_function`. This will ensure your site throws a 401 unless passed a valid token to the endpoint. This function should return the expected token for this request. It doesn't take any arguments.
 
 You need to add `plug :put_webmention_header` to any pipeline/controller where you want to have a webmention header injected.
