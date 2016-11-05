@@ -1,11 +1,10 @@
 defmodule Webmention.MentionController do
-  import Plug.Conn
-  use Plug.Builder
-  use Plug.Debugger
   require Logger
-  plug Webmention.Plug
+  import Plug.Conn
+
 
   def init(options) do
+    Application.start(:ibrowse)
     Logger.debug inspect options
     options
   end
@@ -18,6 +17,14 @@ defmodule Webmention.MentionController do
   def create(conn, module, callback, params) do
     content = Webmention.Plug.call(conn, nil)
     apply(module, callback, [content])
+    Logger.debug inspect content
     conn |> send_resp(200, "Got #{content}")
+  end
+
+  def token(conn, module, callback, params) do
+    # Logger.debug
+    access_token = apply(module, callback, [params["code"]])
+    conn |> send_resp(200, :jsx.encode(%{access_token: access_token, token_type: "bearer", expires_in: 3600}))
+    # conn |> send_resp(200, "TEST")
   end
 end

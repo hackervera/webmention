@@ -1,4 +1,5 @@
 defmodule Webmention do
+  use PatternTap
   @moduledoc """
   This module is for creating webmentions
   """
@@ -7,18 +8,40 @@ defmodule Webmention do
   require IEx
 
   @doc """
+  Attempt to get token for private content
+  """
+
+  def get_token(source, code) do
+    Logger.debug  inspect HTTPotion.head(source).headers
+    link = HTTPotion.head(source).headers[:link]
+    url =
+      case link do
+        links when is_list(link) ->
+          links
+          |> Enum.find_value(%{}, fn link -> Regex.named_captures(~r/<(?<url>.*)>.*token_endpoint.*/, link) end)
+        link ->
+          Regex.named_captures(~r/<(?<url>.*)>.*token_endpoint.*/, link)
+      end
+      |> Map.get("url")
+    Webmention.Parser.post(url, grant_type: "authorization_code", code: code).body[:access_token]
+
+  end
+
+
+  @doc """
   Hit source url and see if it points to target anywhere in the body
 
   Example:
   Webmention.verify "https://css-tricks.com/attribute-selectors/", "/video-screencasts/"
   """
-  def verify(source, target) do
-    html = HTTPotion.get(source).body
+  def verify(source, token, target) do
+    Logger.debug inspect [source, token, target]
+    html = HTTPotion.get(source, [headers: [Authorization: "Bearer " <> token]]).body
     a_hrefs = Floki.find(html, "a[href='#{target}']")
     link_hrefs = Floki.find(html, "link[href='#{target}']")
     all_refs = a_hrefs ++ link_hrefs
     result =  all_refs |> List.first
-    IO.inspect result
+    Logger.debug inspect result
     if result do
       {:ok, html}
     else

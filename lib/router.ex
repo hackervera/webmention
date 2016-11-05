@@ -4,7 +4,6 @@ defmodule Webmention.Router do
   defmacro __using__(options) do
     # %{function: :create, callback: options.webmention_callback}
     # Force app to start so we can use it later
-    HTTPotion.start
     quote do
       @indie_options unquote options
       pipeline :indieweb do
@@ -18,6 +17,7 @@ defmodule Webmention.Router do
 
       scope "/#{@indie_options.root}" do
         post "/webmention", MentionController, [function: :create, callback: @indie_options.webmention_callback, module: __MODULE__]
+        post "/token", MentionController, [function: :token, callback: @indie_options.token_function, module: __MODULE__]
       end
     end
   end

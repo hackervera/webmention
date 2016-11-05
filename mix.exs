@@ -14,7 +14,7 @@ defmodule Webmention.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :httpotion]]
+    [applications: [:logger, :httpotion, :ibrowse]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +27,6 @@ defmodule Webmention.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:httpotion, "~> 3.0.2"},{:floki, "~> 0.11.0"}]
+    [{:httpotion, "~> 3.0.2"},{:floki, "~> 0.11.0"},{:jsx, "~> 2.8"}, {:pattern_tap, "~> 0.2.2"}]
   end
 end
