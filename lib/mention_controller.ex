@@ -16,7 +16,7 @@ defmodule Webmention.MentionController do
 
   def create(conn, module, callback, params) do
     content = Webmention.Plug.call(conn, nil)
-    apply(module, callback, [content])
+    apply(module, callback, [conn, content])
     Logger.debug inspect content
     conn |> send_resp(200, "Got #{content}")
   end
