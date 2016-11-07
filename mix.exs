@@ -27,6 +27,6 @@ defmodule Webmention.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:plug, "~> 1.0"},{:httpotion, "~> 3.0.2"},{:floki, "~> 0.11.0"},{:jsx, "~> 2.8"}, {:pattern_tap, "~> 0.2.2"},{:microformats2, path: "~/microformats2-elixir"}]
+    [{:plug, "~> 1.0"},{:httpotion, "~> 3.0.2"},{:floki, "~> 0.11.0"},{:jsx, "~> 2.8"}, {:pattern_tap, "~> 0.2.2"},{:microformats2, github: "tjgillies/microformats2-elixir"}]
   end
 end
