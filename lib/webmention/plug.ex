@@ -13,12 +13,13 @@ defmodule Webmention.Plug do
 
   def call(conn, _options) do
     target_host = URI.parse(conn.params["target"]).host
-    token = ""
     if conn.host != target_host do
       conn |> send_resp(400, "This is not the host you're looking for")
     end
-    if conn.params["code"] do
-      token = Webmention.get_token(conn.params["source"], conn.params["code"])
+    token =
+      cond do
+      conn.params["code"] -> Webmention.get_token(conn.params["source"], conn.params["code"])
+      true -> ""
     end
     verified = Webmention.verify(conn.params["source"], token, conn.params["target"])
     case verified do
@@ -26,7 +27,9 @@ defmodule Webmention.Plug do
         conn |> send_resp(403, "Webmention source not verified.")
         nil
       {:ok, html} ->
-        content = html |> Webmention.content
+        uri = URI.parse(conn.params["source"])
+        url = "#{uri.scheme}://#{uri.host}"
+        content = html |> Webmention.content(url)
         Logger.debug inspect content
         # conn |> put_private :message_content, content
         content

@@ -12,7 +12,7 @@ defmodule Webmention do
   """
 
   def get_token(source, code) do
-    Logger.debug  inspect HTTPotion.head(source).headers
+    # Logger.debug  inspect HTTPotion.head(source).headers
     link = HTTPotion.head(source).headers[:link]
     url =
       case link do
@@ -35,13 +35,13 @@ defmodule Webmention do
   Webmention.verify "https://css-tricks.com/attribute-selectors/", "/video-screencasts/"
   """
   def verify(source, token, target) do
-    Logger.debug inspect [source, token, target]
+    # Logger.debug inspect [source, token, target]
     html = HTTPotion.get(source, [headers: [Authorization: "Bearer " <> token]]).body
     a_hrefs = Floki.find(html, "a[href='#{target}']")
     link_hrefs = Floki.find(html, "link[href='#{target}']")
     all_refs = a_hrefs ++ link_hrefs
     result =  all_refs |> List.first
-    Logger.debug inspect result
+    # Logger.debug inspect result
     if result do
       {:ok, html}
     else
@@ -49,9 +49,19 @@ defmodule Webmention do
     end
   end
 
-  def content(html) do
+  def content(html, url) do
     # TODO A method to parse out links
-    Floki.find(html, "[class*=e-content]") |> List.first |> Floki.raw_html
+    micro_data = Microformats2.parse(html, url)
+    items =
+      micro_data.items
+      |> Enum.filter(fn(item) ->
+      Enum.find(item.type, fn(type) ->
+        type in ["h-entry", "h-card"]
+      end)
+    end)
+    Logger.debug inspect items
+    # Floki.find(html, "[class*=e-content]") |> List.first |> Floki.raw_html
+    items
   end
 
   def endpoint(content_url) do

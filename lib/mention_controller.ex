@@ -5,20 +5,20 @@ defmodule Webmention.MentionController do
 
   def init(options) do
     Application.start(:ibrowse)
-    Logger.debug inspect options
+    # Logger.debug inspect options
     options
   end
 
   def call(conn, [function: function, callback: callback, module: module]) do
-    Logger.debug inspect function
+    # Logger.debug inspect function
     apply(__MODULE__, function, [conn, module, callback, conn.params])
   end
 
-  def create(conn, module, callback, params) do
+  def create(conn, module, callback, _params) do
     content = Webmention.Plug.call(conn, nil)
     apply(module, callback, [conn, content])
-    Logger.debug inspect content
-    conn |> send_resp(200, "Got #{content}")
+    # Logger.debug inspect content
+    conn |> send_resp(200, "Got #{:jsx.encode content}")
   end
 
   def token(conn, module, callback, params) do

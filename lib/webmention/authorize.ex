@@ -11,16 +11,16 @@ defmodule Webmention.Authorize do
   end
 
   def call(conn, token_func) do
-    Logger.debug inspect conn.req_headers
+    # Logger.debug inspect conn.req_headers
     host = conn.req_headers |> Enum.into(%{}) |> Map.get("host")
     auth_header =
       conn.req_headers
       |> Enum.into(%{})
       |> Map.get("authorization")
     auth_header = auth_header || ""
-    Logger.debug inspect auth_header
+    # Logger.debug inspect auth_header
     captures = Regex.named_captures(~r/Bearer (?<token>.*)/, auth_header) || %{}
-    Logger.debug inspect captures
+    # Logger.debug inspect captures
     token = Map.get(captures, "token")
     authorized? = token_func.(conn, token)
     case authorized? do
